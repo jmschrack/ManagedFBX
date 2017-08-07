@@ -12,13 +12,13 @@ SceneNode::SceneNode(FbxNode *node)
 
 	for(int i = 0; i < m_nativeNode->GetChildCount(); i++)
 	{
-		auto sub = m_nativeNode->GetChild(i);
+		FbxNode *sub = m_nativeNode->GetChild(i);
 		m_children->Add(gcnew SceneNode(sub));
 	}
 
 	for(int i = 0; i < m_nativeNode->GetNodeAttributeCount(); i++)
 	{
-		auto attr = m_nativeNode->GetNodeAttributeByIndex(i);
+		FbxNodeAttribute *attr = m_nativeNode->GetNodeAttributeByIndex(i);
 		m_attributes->Add(gcnew NodeAttribute(attr));
 	}
 }

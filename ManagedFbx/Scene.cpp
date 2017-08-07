@@ -12,15 +12,15 @@ Scene::Scene(string ^name)
 
 Scene ^Scene::Import(string ^filename)
 {
-	auto importer = Manager::GetImporter();
+	FbxImporter *importer = Manager::GetImporter();
 
 	if(!importer->Initialize(StringHelper::ToNative(filename)))
-		throw gcnew FbxException("Failed to initialise the FBX importer: {0}", gcnew string(importer->GetLastErrorString()));
+		throw gcnew FbxException("Failed to initialise the FBX importer: {0}", gcnew string(importer->GetStatus().GetErrorString()));
 
-	auto scene = gcnew Scene("");
+	Scene ^scene = gcnew Scene("");
 
 	if(!importer->Import(scene->m_nativeScene))
-		throw gcnew FbxException("Failed to import the scene: {0}", gcnew string(importer->GetLastErrorString()));
+		throw gcnew FbxException("Failed to import the scene: {0}", gcnew string(importer->GetStatus().GetErrorString()));
 
 	// Needs refreshing
 	scene->m_rootNode = gcnew SceneNode(scene->m_nativeScene->GetRootNode());
@@ -30,13 +30,13 @@ Scene ^Scene::Import(string ^filename)
 
 void Scene::Save(string ^filename)
 {
-	auto exporter = Manager::GetExporter();
+	FbxExporter *exporter = Manager::GetExporter();
 
 	if(!exporter->Initialize(StringHelper::ToNative(filename)))
-		throw gcnew FbxException("Failed to initialise the FBX exporter: {0}", gcnew string(exporter->GetLastErrorString()));
+		throw gcnew FbxException("Failed to initialise the FBX exporter: {0}", gcnew string(exporter->GetStatus().GetErrorString()));
 
 	if(!exporter->Export(m_nativeScene))
-		throw gcnew FbxException("Failed to export the scene: {0}", gcnew string(exporter->GetLastErrorString()));
+		throw gcnew FbxException("Failed to export the scene: {0}", gcnew string(exporter->GetStatus().GetErrorString()));
 }
 
 void Scene::Name::set(string ^value)
@@ -61,7 +61,7 @@ void Scene::Application::set(string ^value)
 
 string ^Scene::Application::get()
 {
-	auto name = m_nativeScene->GetSceneInfo()->LastSaved_ApplicationName.Get().Buffer();
+	char *name = m_nativeScene->GetSceneInfo()->LastSaved_ApplicationName.Get().Buffer();
 	return gcnew string(name);
 }
 
@@ -113,8 +113,8 @@ void Scene::BakeTransform(SceneNode ^node)
 	for each(SceneNode ^node in node->ChildNodes)
 		BakeTransform(node);
 
-	auto native = node->m_nativeNode;
-	auto mesh = native->GetMesh();
+	FbxNode *native = node->m_nativeNode;
+	FbxMesh *mesh = native->GetMesh();
 
 	if(!mesh)
 		return;
@@ -123,11 +123,11 @@ void Scene::BakeTransform(SceneNode ^node)
 		native->GetGeometricRotation(FbxNode::eSourcePivot),
 		native->GetGeometricScaling(FbxNode::eSourcePivot));
 
-	auto total = m_nativeScene->GetEvaluator()->GetNodeGlobalTransform(native) * geometry;
+	FbxAMatrix total = m_nativeScene->GetAnimationEvaluator()->GetNodeGlobalTransform(native) * geometry;
 
 	for(int i = 0; i < mesh->GetControlPointsCount(); i++)
 	{
-		auto pos = mesh->GetControlPointAt(i);
+		FbxVector4 pos = mesh->GetControlPointAt(i);
 		mesh->SetControlPointAt(total.MultT(pos), i);
 	}
 }

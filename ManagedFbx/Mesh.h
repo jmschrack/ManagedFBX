@@ -25,6 +25,8 @@ namespace ManagedFbx
 	internal:
 		Mesh(FbxMesh *nativeMesh);
 
+		Mesh(FbxNodeAttribute *nativeMesh);
+
 	private:
 		FbxMesh *m_nativeMesh;
 	};

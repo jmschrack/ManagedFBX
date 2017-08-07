@@ -1,20 +1,25 @@
 #pragma once
 
-#include <msclr\marshal.h>
+#include <string>
 
-using namespace msclr::interop;
+using namespace System;
 
 ref class StringHelper
 {
 public:
 	static const char *ToNative(System::String ^string)
 	{
-		if(!m_context)
-			m_context = gcnew marshal_context();
 
-		return m_context->marshal_as<const char*>(string);
+		//String ^myString = "Hello";
+		array<Byte> ^chars = System::Text::Encoding::ASCII->GetBytes(string);
+		pin_ptr<Byte> charsPointer = &(chars[0]);
+		char *nativeCharsPointer = reinterpret_cast<char *>(static_cast<unsigned char *>(charsPointer));
+		std::string native(nativeCharsPointer, chars->Length);
+
+		
+
+		return nativeCharsPointer;
 	}
 
-private:
-	static marshal_context ^m_context;
+
 };

@@ -9,12 +9,22 @@ Mesh::Mesh(FbxMesh *nativeMesh)
 	m_nativeMesh = nativeMesh;
 }
 
+Mesh::Mesh(FbxNodeAttribute *nativeMesh) {
+	m_nativeMesh = dynamic_cast<FbxMesh*>(nativeMesh);
+
+}
+
+
 Mesh ^Mesh::Triangulate()
 {
-	auto mesh = gcnew Mesh(Manager::GetGeomConverter()->TriangulateMesh(m_nativeMesh));
-	mesh->UVLayer = UVLayer;
-	return mesh;
+Mesh ^mesh = gcnew Mesh(Manager::GetGeomConverter()->Triangulate(m_nativeMesh,false,false));
+
+mesh->UVLayer = UVLayer;
+return mesh;
 }
+
+
+
 
 bool Mesh::Triangulated::get()
 {
@@ -24,11 +34,11 @@ bool Mesh::Triangulated::get()
 array<ManagedFbx::Polygon> ^Mesh::Polygons::get()
 {
 	int count = m_nativeMesh->GetPolygonCount();
-	auto list = gcnew array<Polygon>(count);
+	array<Polygon> ^list = gcnew array<Polygon>(count);
 
 	for(int i = 0; i < count; i++)
 	{
-		auto poly = Polygon();
+		Polygon poly = Polygon();
 
 		int indexCount = m_nativeMesh->GetPolygonSize(i);
 		poly.Indices = gcnew array<int>(indexCount);
@@ -45,11 +55,11 @@ array<ManagedFbx::Polygon> ^Mesh::Polygons::get()
 array<Vector3> ^Mesh::Vertices::get()
 {
 	int count = m_nativeMesh->GetControlPointsCount();
-	auto list = gcnew array<Vector3>(count);
+	array<Vector3> ^list = gcnew array<Vector3>(count);
 
 	for(int i = 0; i < count; i++)
 	{
-		auto point =  m_nativeMesh->GetControlPointAt(i);
+		FbxVector4 point =  m_nativeMesh->GetControlPointAt(i);
 		list[i] = Vector3(point);
 	}
 
@@ -58,9 +68,9 @@ array<Vector3> ^Mesh::Vertices::get()
 
 array<Vector3> ^Mesh::Normals::get()
 {
-	auto normals = m_nativeMesh->GetLayer(0)->GetNormals();
+	FbxLayerElementNormal *normals = m_nativeMesh->GetLayer(0)->GetNormals();
 	int count = normals->GetDirectArray().GetCount();
-	auto list = gcnew array<Vector3>(count);
+	array<Vector3> ^list = gcnew array<Vector3>(count);
 
 	for(int i = 0; i < count; i++)
 		list[i] = Vector3(normals->GetDirectArray().GetAt(i));
@@ -70,14 +80,14 @@ array<Vector3> ^Mesh::Normals::get()
 
 array<Vector2> ^Mesh::TextureCoords::get()
 {
-	auto layer = m_nativeMesh->GetLayer(UVLayer);
+	FbxLayer *layer = m_nativeMesh->GetLayer(UVLayer);
 
 	if(!layer)
 		return gcnew array<Vector2>(0);
 
-	auto coords = layer->GetUVs();
+	FbxLayerElementUV *coords = layer->GetUVs();
 	int count = coords == nullptr ? 0 : coords->GetDirectArray().GetCount();
-	auto list = gcnew array<Vector2>(count);
+	array<Vector2> ^list = gcnew array<Vector2>(count);
 
 	for(int i = 0; i < count; i++)
 		list[i] = Vector2(coords->GetDirectArray().GetAt(i));
@@ -94,9 +104,9 @@ int Mesh::GetMaterialId(int polygon)
 
 array<int> ^Mesh::MaterialIDs::get()
 {
-	auto materials = m_nativeMesh->GetLayer(0)->GetMaterials();
+	FbxLayerElementMaterial *materials = m_nativeMesh->GetLayer(0)->GetMaterials();
 	int count = materials == nullptr ? 0 : materials->GetIndexArray().GetCount();
-	auto list = gcnew array<int>(count);
+	array<int> ^list = gcnew array<int>(count);
 
 	for(int i = 0; i < count; i++)
 		list[i] = materials->GetIndexArray().GetAt(i);
@@ -118,9 +128,9 @@ Vector3 Mesh::GetVertexNormal(int polygon, int index)
 
 array<Colour> ^Mesh::VertexColours::get()
 {
-	auto colours = m_nativeMesh->GetLayer(0)->GetVertexColors();
+	FbxLayerElementVertexColor *colours = m_nativeMesh->GetLayer(0)->GetVertexColors();
 	int count = colours == nullptr ? 0 : colours->GetDirectArray().GetCount();
-	auto list = gcnew array<Colour>(count);
+	array<Colour> ^list = gcnew array<Colour>(count);
 
 	for(int i = 0; i < count; i++)
 		list[i] = Colour(colours->GetDirectArray().GetAt(i));
