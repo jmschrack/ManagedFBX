@@ -3,7 +3,7 @@ ManagedFBX is a .NET wrapper for Autodesk's FBX SDK, written in C++/CLI. For use
 # Building from source
 These steps will enable "Platform Tools v90" in VS2017 community
 (**You must install these in this order**)
-* Install VS2008  Follow these [instructions](#How-to-get-VS2008)
+* Install VS2008.  Follow these [instructions](#How-to-get-VS2008) if you don't have VS2008.
 * Install [VS2010](https://my.visualstudio.com/Downloads?q=visual%20studio%202010&wt.mc_id=o~msft~vscom~older-downloads)
 * Install [VS2017](https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15)
 * Install the [FBX SDK](http://usa.autodesk.com/adsk/servlet/pc/item?siteID=123112&id=10775847)
