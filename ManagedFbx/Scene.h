@@ -3,7 +3,7 @@
 #include "SceneNode.h"
 #include "ConversionTypes.h"
 
-using namespace System::Collections::Generic;
+//using namespace System::Collections::Generic;
 
 namespace ManagedFbx
 {

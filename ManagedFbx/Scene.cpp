@@ -74,6 +74,8 @@ void Scene::ConvertUnits(Unit units)
 {
 	switch(units)
 	{
+		
+		//TODO fix this
 	case Unit::Metres:
 		FbxSystemUnit::m.ConvertScene(m_nativeScene);
 		break;
@@ -81,7 +83,6 @@ void Scene::ConvertUnits(Unit units)
 	case Unit::Centimetres:
 		FbxSystemUnit::cm.ConvertScene(m_nativeScene);
 		break;
-
 	default:
 		throw gcnew NotImplementedException("The supplied unit type is not currently supported for conversion.");
 	}
@@ -91,18 +92,24 @@ void Scene::ConvertAxes(AxisSystem axis)
 {
 	switch(axis)
 	{
+		//TODO: figure out how to fix this
 	case AxisSystem::Max:
-		FbxAxisSystem::Max.ConvertScene(m_nativeScene);
+	{
+		FBXSDK_DLL::FbxAxisSystem::Max.ConvertScene(m_nativeScene);
 		break;
+	}
+		
 
-	case AxisSystem::MayaYUp:
+	case AxisSystem::MayaYUp: {
+		
+
 		FbxAxisSystem::MayaYUp.ConvertScene(m_nativeScene);
 		break;
+	}
 
 	case AxisSystem::MayaZUp:
 		FbxAxisSystem::MayaZUp.ConvertScene(m_nativeScene);
 		break;
-
 	default:
 		throw gcnew NotImplementedException("The supplied axis type is not currently supported for conversion.");
 	}
