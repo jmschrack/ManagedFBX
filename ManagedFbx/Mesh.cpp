@@ -17,7 +17,7 @@ Mesh::Mesh(FbxNodeAttribute *nativeMesh) {
 
 Mesh ^Mesh::Triangulate()
 {
-Mesh ^mesh = gcnew Mesh(Manager::GetGeomConverter()->Triangulate(m_nativeMesh,false,false));
+Mesh ^mesh = gcnew Mesh(Manager::GetGeomConverter()->TriangulateMesh(m_nativeMesh));
 
 mesh->UVLayer = UVLayer;
 return mesh;
